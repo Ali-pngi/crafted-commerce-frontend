@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
-import * as authService from '../../services/authService';
-import './SignupForm.scss';
+import useAuth from '../../hooks/useAuth';  // Use your custom hook
+import './SignupForm.css';
 
-const SignupForm = ({ setUser }) => {
+const SignupForm = () => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState('');
+  const { signup, error, loading } = useAuth();  // Get signup function, error, and loading state
   const [formData, setFormData] = useState({
     email: '',
     username: '',
     hashedPassword: '',
     passwordConf: '',
   });
-
-  const updateMessage = (message) => {
-    setMessage(message);
-  };
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -25,11 +21,10 @@ const SignupForm = ({ setUser }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const newUser = await authService.signup(formData);
-      setUser(newUser.user);
+      await signup(formData);  // Use signup from useAuth
       navigate('/');
     } catch (error) {
-      updateMessage(error.message);
+      console.error(error);
     }
   };
 
@@ -43,7 +38,7 @@ const SignupForm = ({ setUser }) => {
     <Container className="vh-100 d-flex align-items-center justify-content-center signup-form">
       <div>
         <h1>Sign Up</h1>
-        {message && <Alert variant="danger">{message}</Alert>}
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="email">
             <Form.Label>Email</Form.Label>
@@ -86,8 +81,8 @@ const SignupForm = ({ setUser }) => {
             />
           </Form.Group>
           <div className="d-flex justify-content-between mt-3">
-            <Button variant="primary" type="submit" disabled={isFormInvalid()}>
-              Sign Up
+            <Button variant="primary" type="submit" disabled={loading || isFormInvalid()}>
+              {loading ? 'Signing up...' : 'Sign Up'}
             </Button>
             <Link to="/">
               <Button variant="secondary">Go Back</Button>

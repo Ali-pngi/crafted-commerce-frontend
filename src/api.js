@@ -1,28 +1,21 @@
-// src/api.js
+// api.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api'; // Adjust the URL as needed
-
-// Example function to fetch products
-export const fetchProducts = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/products/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    throw error;
-  }
+export const fetchPosts = async () => {
+  const response = await axios.get('/api/posts');
+  return response.data;
 };
 
-// Example function to handle user sign-in
-export const signIn = async (credentials) => {
-  try {
-    const response = await axios.post(`${API_URL}/auth/signin/`, credentials);
-    return response.data;
-  } catch (error) {
-    console.error('Error signing in:', error);
-    throw error;
-  }
+export const createPost = async (postData) => {
+  const response = await axios.post('/api/posts', postData);
+  return response.data;
 };
 
-// Add more functions as needed for other endpoints
+export const editPost = async (postId, updatedData) => {
+  const response = await axios.put(`/api/posts/${postId}`, updatedData);
+  return response.data;
+};
+
+export const deletePost = async (postId) => {
+  await axios.delete(`/api/posts/${postId}`);
+};

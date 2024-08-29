@@ -1,42 +1,37 @@
-// src/components/Index/IndexPage.jsx
-import React, { useEffect, useState } from 'react';
-import { fetchProducts } from '../../api';
+import React, { useState, useEffect } from 'react';
+import Product from '../ProductDetails/ProductDetails';
 
-function IndexPage() {
+const IndexPage = ({ onAddToWatchlist, onShowProduct }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const loadProducts = async () => {
+   
+    const fetchProducts = async () => {
       try {
-        const data = await fetchProducts();
+        const response = await fetch('http://localhost:8000/api/products'); 
+ 
+        const data = await response.json();
         setProducts(data);
       } catch (error) {
-        console.error('Failed to load products', error);
+        console.error('Error fetching products:', error);
       }
     };
 
-    loadProducts();
+    fetchProducts();
   }, []);
 
   return (
-    <div>
-      <h1>Products</h1>
-      <div className="row">
-        {products.map((product) => (
-          <div key={product.id} className="col-md-4">
-            <div className="card mb-4">
-              <img src={product.image_url} className="card-img-top" alt={product.title} />
-              <div className="card-body">
-                <h5 className="card-title">{product.title}</h5>
-                <p className="card-text">{product.description}</p>
-                <p className="card-text">${product.price}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="index-page">
+      {products.map(product => (
+        <Product
+          key={product.id}
+          product={product}
+          onAddToWatchlist={onAddToWatchlist}
+          onShowProduct={onShowProduct}
+        />
+      ))}
     </div>
   );
-}
+};
 
 export default IndexPage;

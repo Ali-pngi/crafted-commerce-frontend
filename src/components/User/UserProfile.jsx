@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './UserProfile.scss';
+import './UserProfile.css';
 
 const UserProfile = ({ user }) => {
   const [products, setProducts] = useState([]);

@@ -1,34 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
-import * as authService from '../../services/authService';
+import useAuth from '../../hooks/useAuth';  // Use your custom hook
 import './SigninForm.css';
 
-const SigninForm = ({ setUser }) => {
+const SigninForm = () => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState('');
+  const { signin, error, loading } = useAuth();  // Get signin function, error, and loading state
   const [formData, setFormData] = useState({
     username: '',
     hashedPassword: '',
   });
 
-  const updateMessage = (message) => {
-    setMessage(message);
-  };
-
   const handleChange = (event) => {
-    updateMessage('');
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const user = await authService.signin(formData);
-      setUser(user);
+      await signin(formData);  // Use signin from useAuth
       navigate('/');
     } catch (error) {
-      updateMessage(error.message);
+      console.error(error);
     }
   };
 
@@ -36,7 +30,7 @@ const SigninForm = ({ setUser }) => {
     <Container className="vh-100 d-flex align-items-center justify-content-center signin-form">
       <div>
         <h1>Log In</h1>
-        {message && <Alert variant="danger">{message}</Alert>}
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="username">
             <Form.Label>Username</Form.Label>
@@ -59,8 +53,8 @@ const SigninForm = ({ setUser }) => {
             />
           </Form.Group>
           <div className="d-flex justify-content-between mt-3">
-            <Button variant="primary" type="submit">
-              Log In
+            <Button variant="primary" type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Log In'}
             </Button>
             <Link to="/">
               <Button variant="secondary">Go Back</Button>

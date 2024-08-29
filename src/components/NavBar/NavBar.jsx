@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <a className="navbar-brand" href="/">Navbar</a>
+        <Link className="navbar-brand" to="/">Navbar</Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -15,9 +16,12 @@ const Navbar = () => {
                 Menu
               </a>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a className="dropdown-item" href="/">Home</a></li>
-                <li><a className="dropdown-item" href="/">Profile</a></li>
-                <li><a className="dropdown-item" href="/">Sign Out</a></li>
+                <li><Link className="dropdown-item" to="/">Home</Link></li>
+                <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
+                {user && user.role === 'admin' && (
+                  <li><Link className="dropdown-item" to="/admin">Admin</Link></li>
+                )}
+                <li><Link className="dropdown-item" to="/signout">Sign Out</Link></li>
               </ul>
             </li>
           </ul>
