@@ -1,11 +1,12 @@
-// IndexPage.jsx
 import React, { useState, useEffect } from 'react';
 import ProductPreview from '../Products/ProductPreview';
 import { Container, Row } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Import this to enable navigation
 
 const IndexPage = ({ user }) => {
   const [products, setProducts] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchProductPreviews = async () => {
@@ -60,6 +61,11 @@ const IndexPage = ({ user }) => {
     }
   };
 
+  const handleShowProduct = (productId) => {
+    // Navigate to the product details page
+    navigate(`/product/${productId}`);
+  };
+
   return (
     <Container>
       <Row>
@@ -68,6 +74,7 @@ const IndexPage = ({ user }) => {
             key={product.id}
             product={product}
             onWatchlistToggle={handleWatchlistToggle}
+            onShowProduct={handleShowProduct} // Pass the new handler to the ProductPreview
             isInWatchlist={watchlist.includes(product.id)}
           />
         ))}

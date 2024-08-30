@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Carousel, Button } from 'react-bootstrap';
+import './ProductDetails.css';
 
 const ProductDetails = ({ user }) => {
   const { id } = useParams();
@@ -74,9 +75,10 @@ const ProductDetails = ({ user }) => {
           {product.images.map((image) => (
             <Carousel.Item key={image.id}>
               <img
-                className="d-block w-100"
+                className="d-block w-75"  // Adjusted width
                 src={image.image_url}
                 alt={`Slide ${image.id}`}
+                style={{ height: '400px', objectFit: 'cover' }}  // Adjusted height
               />
               <Carousel.Caption>
                 <p>Uploaded on: {new Date(image.uploaded_at).toLocaleDateString()}</p>
