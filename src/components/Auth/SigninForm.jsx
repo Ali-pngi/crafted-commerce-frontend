@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth';  // Use your custom hook
+import  useAuth  from '../../hooks/useAuth';  
 import './SigninForm.css';
 
 const SigninForm = () => {
   const navigate = useNavigate();
-  const { signin, error, loading } = useAuth();  // Get signin function, error, and loading state
+  const { signin, error, loading } = useAuth();  
   const [formData, setFormData] = useState({
     username: '',
     hashedPassword: '',
@@ -19,16 +19,22 @@ const SigninForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await signin(formData);  // Use signin from useAuth
-      navigate('/');
+        const userData = await signin(formData);  // signin handles setUser internally
+        if (userData === 'admin') {
+            navigate('/admin');  
+        } else {
+            navigate('/');  
+        }
     } catch (error) {
-      console.error(error);
+        console.error('Sign-in error:', error);
     }
-  };
+};
+
+  
 
   return (
     <Container className="vh-100 d-flex align-items-center justify-content-center signin-form">
-      <div>
+      <div className ='form card'>
         <h1>Log In</h1>
         {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>

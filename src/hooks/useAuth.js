@@ -1,6 +1,6 @@
 // hooks/useAuth.js
 import { useState, useEffect } from 'react';
-import { getToken, getUser, signup, signin, signout } from '../services/authservice';  // Adjust path as needed
+import {  getUser, signup, signin, signout } from '../services/authservice';  // Adjust path as needed
 
 const useAuth = () => {
     const [user, setUser] = useState(null);
@@ -19,7 +19,7 @@ const useAuth = () => {
     const handleSignup = async (formData) => {
         setLoading(true);
         try {
-            const result = await signup(formData);
+            await signup(formData);
             setUser(getUser());
             setError(null);
         } catch (err) {
@@ -32,7 +32,7 @@ const useAuth = () => {
     const handleSignin = async (userData) => {
         setLoading(true);
         try {
-            const result = await signin(userData);
+            await signin(userData);
             setUser(getUser());
             setError(null);
         } catch (err) {

@@ -40,3 +40,32 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.card {
+  background-color: #efe6dd;
+  padding: 10px;
+  border: 5px solid #5f432c
+}
+
+.card-img {
+  border-radius: 10px;
+}
+
+.card-title {
+  text-decoration: underline;
+}
+
+.card-text {
+  border: 2px solid #5f432c;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
+  width: 50%;
+}
+
+.btn-primary {
+  background-color: #8d9440;
+  border: 4px solid #5f432c;
+  color: #3c3c3c;
+}

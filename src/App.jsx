@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Navbar from './components/NavBar/NavBar';
 import SignIn from './components/Auth/SigninForm';
@@ -12,7 +12,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 
 function App() {
-  const { user, signout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleAddToWatchlist = async (productId) => {

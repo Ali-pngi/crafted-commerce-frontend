@@ -35,7 +35,7 @@ const SignupForm = () => {
   };
 
   return (
-    <Container className="vh-100 d-flex align-items-center justify-content-center signup-form">
+    <Container className="signup-form">
       <div>
         <h1>Sign Up</h1>
         {error && <Alert variant="danger">{error}</Alert>}

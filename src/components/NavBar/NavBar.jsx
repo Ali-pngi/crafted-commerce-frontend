@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './NavBar.css'
 
 const Navbar = ({ user }) => {
   return (
@@ -33,17 +34,32 @@ const Navbar = ({ user }) => {
                 <li>
                   <Link className="dropdown-item" to="/">Home</Link>
                 </li>
-                <li>
-                  <Link className="dropdown-item" to="/profile">Profile</Link>
-                </li>
-                {user && user.role === 'admin' && (
+                {user && (
+                  <>
+                    <li>
+                      <Link className="dropdown-item" to="/profile">Profile</Link>
+                    </li>
+                    {user.role === 'admin' && (
+                      <>
+                        <li>
+                          <Link className="dropdown-item" to="/admin">Admin</Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item" to="/create-product">Create Product</Link>
+                        </li>
+                      </>
+                    )}
+                    <li>
+                      <Link className="dropdown-item" to="/signout">Sign Out</Link>
+                    </li>
+                  </>
+                )}
+                {!user && (
                   <li>
-                    <Link className="dropdown-item" to="/admin">Admin</Link>
+                    <Link className="dropdown-item" to="/signin">Sign In</Link>
+                    <Link className="dropdown-item" to="/signup">Sign Up</Link>
                   </li>
                 )}
-                <li>
-                  <Link className="dropdown-item" to="/signout">Sign Out</Link>
-                </li>
               </ul>
             </li>
           </ul>

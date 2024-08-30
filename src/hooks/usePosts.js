@@ -12,6 +12,7 @@ function usePosts() {
         setPosts(data);
         setLoading(false);
       } catch (error) {
+        error
         setError('Failed to fetch posts');
         setLoading(false);
       }
@@ -25,6 +26,7 @@ function usePosts() {
       const createdPost = await createPost(newPost);
       setPosts((prevPosts) => [...prevPosts, createdPost]);
     } catch (error) {
+        error
       setError('Failed to create post');
     }
   };
@@ -36,6 +38,7 @@ function usePosts() {
         prevPosts.map((post) => (post.id === postId ? editedPost : post))
       );
     } catch (error) {
+        error
       setError('Failed to edit post');
     }
   };
@@ -45,6 +48,7 @@ function usePosts() {
       await deletePost(postId);
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
     } catch (error) {
+        error
       setError('Failed to delete post');
     }
   };

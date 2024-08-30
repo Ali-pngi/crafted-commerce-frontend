@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f4f1ed;
 }
 
 h1 {
@@ -66,3 +66,62 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+.card {
+  background-color: #efe6dd;
+  padding: 10px;
+  border: 5px solid #5f432c
+}
+
+.card-img {
+  border-radius: 10px;
+}
+
+.card-title {
+  text-decoration: underline;
+}
+
+.card-text {
+  border: 2px solid #5f432c;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
+  width: 50%;
+}
+
+.btn-primary {
+  background-color: #8d9440;
+  border: 4px solid #5f432c;
+  color: #3c3c3c;
+}
+
+.navbar {
+  width:fit-content;
+  border-radius: 15px;
+
+  
+}
+
+.btn-secondary {
+  background-color: #8d9440;
+  border: 4px solid #5f432c;
+  color: #3c3c3c;
+}
+
+.signup_form {
+  width: 80%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: ;
+
+}
+
+.submit {
+  background-color: #8d9440;
+  border: 4px solid #5f432c;
+  color: #3c3c3c;
+}
+
