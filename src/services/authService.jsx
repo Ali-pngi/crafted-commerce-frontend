@@ -24,23 +24,25 @@ const getToken = () => {
 
 const signup = async (formData) => {
     try {
-        const res = await fetch(`${BACKEND_URL}/users/signup`, {
+        const res = await fetch(`${BACKEND_URL}/api/auth/signup/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
         });
 
         if (!res.ok) {
+            const errorData = await res.json();
+            console.error('Signup error:', errorData);
             throw new Error(`HTTP error! status: ${res.status}`);
         }
 
         const json = await res.json();
-        if (json.error) {
-            throw new Error(json.error);
+        if (!json.access) {
+            throw new Error('No token received');
         }
 
-        localStorage.setItem('token', json.token);
-        return json;
+        localStorage.setItem('token', json.access);
+        return JSON.parse(atob(json.access.split('.')[1]));
     } catch (error) {
         console.error('Signup error:', error);
         throw error;
@@ -49,7 +51,7 @@ const signup = async (formData) => {
 
 const signin = async (user) => {
     try {
-        const res = await fetch(`${BACKEND_URL}/users/signin`, {
+        const res = await fetch(`${BACKEND_URL}/api/auth/signin/`, {  
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user),

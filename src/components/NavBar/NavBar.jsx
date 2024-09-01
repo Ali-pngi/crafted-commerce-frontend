@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './NavBar.css'
+import './NavBar.css';
 
 const Navbar = ({ user }) => {
   return (
@@ -22,7 +22,7 @@ const Navbar = ({ user }) => {
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle"
-                href="/"
+                href="#"
                 id="navbarDropdownMenuLink"
                 role="button"
                 data-bs-toggle="dropdown"
@@ -34,7 +34,7 @@ const Navbar = ({ user }) => {
                 <li>
                   <Link className="dropdown-item" to="/">Home</Link>
                 </li>
-                {user && (
+                {user ? (
                   <>
                     <li>
                       <Link className="dropdown-item" to="/profile">Profile</Link>
@@ -42,7 +42,7 @@ const Navbar = ({ user }) => {
                     {user.role === 'admin' && (
                       <>
                         <li>
-                          <Link className="dropdown-item" to="/admin">Admin</Link>
+                          <Link className="dropdown-item" to="/admin">Admin Panel</Link>
                         </li>
                         <li>
                           <Link className="dropdown-item" to="/create-product">Create Product</Link>
@@ -53,12 +53,15 @@ const Navbar = ({ user }) => {
                       <Link className="dropdown-item" to="/signout">Sign Out</Link>
                     </li>
                   </>
-                )}
-                {!user && (
-                  <li>
-                    <Link className="dropdown-item" to="/signin">Sign In</Link>
-                    <Link className="dropdown-item" to="/signup">Sign Up</Link>
-                  </li>
+                ) : (
+                  <>
+                    <li>
+                      <Link className="dropdown-item" to="/signin">Sign In</Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/signup">Sign Up</Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </li>
