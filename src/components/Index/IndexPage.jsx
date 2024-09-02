@@ -1,86 +1,96 @@
+// components/IndexPage.jsx
+
 import React, { useState, useEffect } from 'react';
-import ProductPreview from '../Products/ProductPreview';
-import { Container, Row } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import this to enable navigation
+import { Container, Row, Button } from 'react-bootstrap';
+import { checkSuperuser, signout } from '../../services/authService';
+
+const BACKEND_URL = 'http://127.0.0.1:8000';
 
 const IndexPage = ({ user }) => {
-  const [products, setProducts] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+    const [products, setProducts] = useState([]);
+    const [watchlist, setWatchlist] = useState([]);
+    const [isSuperuser, setIsSuperuser] = useState(false);
 
-  useEffect(() => {
-    const fetchProductPreviews = async () => {
-      try {
-        const response = await fetch('/api/products/');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const res = await fetch(`${BACKEND_URL}/api/products/`);
+            const data = await res.json();
+            setProducts(data);
+        };
+
+        const fetchWatchlist = async () => {
+            const res = await fetch(`${BACKEND_URL}/api/watchlist/`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            const data = await res.json();
+            setWatchlist(data.map(item => item.product));
+        };
+
+        const fetchSuperuserStatus = async () => {
+            if (user) {
+                const superuserStatus = await checkSuperuser();
+                setIsSuperuser(superuserStatus.is_superuser);
+            }
+        };
+
+        fetchProducts();
+        if (user) {
+            fetchWatchlist();
+            fetchSuperuserStatus();
         }
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching product previews:', error);
-      }
-    };
+    }, [user]);
 
-    const fetchWatchlist = async () => {
-      if (user) {
-        try {
-          const response = await fetch('/api/watchlist/');
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setWatchlist(data.map(item => item.product));
-        } catch (error) {
-          console.error('Error fetching watchlist:', error);
-        }
-      }
-    };
+    const handleWatchlistToggle = async (productId) => {
+        if (!user) return;
 
-    fetchProductPreviews();
-    fetchWatchlist();
-  }, [user]);
+        const inWatchlist = watchlist.includes(productId);
+        const url = `${BACKEND_URL}/api/watchlist/${inWatchlist ? productId + '/' : ''}`;
+        const method = inWatchlist ? 'DELETE' : 'POST';
 
-  const handleWatchlistToggle = async (productId) => {
-    if (!user) return;
-
-    try {
-      if (watchlist.includes(productId)) {
-        await fetch(`/api/watchlist/${productId}/`, { method: 'DELETE' });
-        setWatchlist(watchlist.filter(id => id !== productId));
-      } else {
-        await fetch(`/api/watchlist/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product: productId }),
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: inWatchlist ? null : JSON.stringify({ product: productId }),
         });
-        setWatchlist([...watchlist, productId]);
-      }
-    } catch (error) {
-      console.error('Error updating watchlist:', error);
-    }
-  };
 
-  const handleShowProduct = (productId) => {
-    // Navigate to the product details page
-    navigate(`/product/${productId}`);
-  };
+        if (res.ok) {
+            setWatchlist(inWatchlist
+                ? watchlist.filter(id => id !== productId)
+                : [...watchlist, productId]);
+        }
+    };
 
-  return (
-    <Container>
-      <Row>
-        {products.map(product => (
-          <ProductPreview
-            key={product.id}
-            product={product}
-            onWatchlistToggle={handleWatchlistToggle}
-            onShowProduct={handleShowProduct} // Pass the new handler to the ProductPreview
-            isInWatchlist={watchlist.includes(product.id)}
-          />
-        ))}
-      </Row>
-    </Container>
-  );
+    const handleSignout = async () => {
+        const refreshToken = localStorage.getItem('refresh');
+        await signout(refreshToken);
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh');
+        window.location.reload();
+    };
+
+    return (
+        <Container>
+            <Row>
+                <h1>Welcome to the Product Page</h1>
+                {isSuperuser && <Button onClick={() => console.log('Create Product')}>Create Product</Button>}
+                <Button onClick={handleSignout}>Sign Out</Button>
+                {products.map(product => (
+                    <div key={product.id}>
+                        <h3>{product.title}</h3>
+                        <Button
+                            variant={watchlist.includes(product.id) ? 'danger' : 'primary'}
+                            onClick={() => handleWatchlistToggle(product.id)}
+                        >
+                            {watchlist.includes(product.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                        </Button>
+                    </div>
+                ))}
+            </Row>
+        </Container>
+    );
 };
 
 export default IndexPage;

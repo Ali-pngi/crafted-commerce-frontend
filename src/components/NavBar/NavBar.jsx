@@ -1,8 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import './NavBar.css';
 
 const Navbar = ({ user }) => {
+  const { signout } = useAuth(); 
+
+  const handleSignout = () => {
+    signout(); 
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -50,7 +57,7 @@ const Navbar = ({ user }) => {
                       </>
                     )}
                     <li>
-                      <Link className="dropdown-item" to="/signout">Sign Out</Link>
+                      <button className="dropdown-item" onClick={handleSignout}>Sign Out</button>
                     </li>
                   </>
                 ) : (

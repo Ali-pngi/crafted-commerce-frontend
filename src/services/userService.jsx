@@ -6,7 +6,6 @@ if (!BACKEND_URL) {
     console.log(`Backend URL is: ${BACKEND_URL}`);
 }
 
-
 const getUserProducts = async (userId) => {
     try {
         const response = await fetch(`${BACKEND_URL}/api/products?user=${userId}`, {
@@ -26,10 +25,9 @@ const getUserProducts = async (userId) => {
     }
 };
 
-
 const getUserWatchlist = async (userId) => {
     try {
-        const response = await fetch(`${BACKEND_URL}/api/watchlist?user=${userId}`, {
+        const response = await fetch(`${BACKEND_URL}/api/watchlist/?user=${userId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -45,7 +43,6 @@ const getUserWatchlist = async (userId) => {
         return [];
     }
 };
-
 
 const updateUserProfile = async (userId, userData) => {
     try {
@@ -69,7 +66,6 @@ const updateUserProfile = async (userId, userData) => {
         throw error;
     }
 };
-
 
 const deleteUserAccount = async (userId) => {
     try {
