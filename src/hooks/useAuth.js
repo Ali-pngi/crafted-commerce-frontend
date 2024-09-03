@@ -12,7 +12,7 @@ const useAuth = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const userData = getUser();
+        const userData = getUser();  
         setUser(userData);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -41,7 +41,7 @@ const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const user = await signin(credentials);
+      const user = await signin(credentials);  
       setUser(user);
     } catch (error) {
       console.error('Login failed:', error);

@@ -1,3 +1,5 @@
+// src/components/Products/ProductDetails.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Carousel, Button } from 'react-bootstrap';
@@ -29,7 +31,11 @@ const ProductDetails = ({ user }) => {
   const checkIfInWatchlist = async (productId) => {
     if (!user) return;
     try {
-      const response = await fetch(`/api/watchlist/`);
+      const response = await fetch(`/api/watchlist/`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -46,11 +52,19 @@ const ProductDetails = ({ user }) => {
 
     try {
       if (isInWatchlist) {
-        await fetch(`/api/watchlist/${product.id}/`, { method: 'DELETE' });
+        await fetch(`/api/watchlist/${product.id}/`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        });
       } else {
         await fetch(`/api/watchlist/`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
           body: JSON.stringify({ product: product.id }),
         });
       }
@@ -75,10 +89,10 @@ const ProductDetails = ({ user }) => {
           {product.images.map((image) => (
             <Carousel.Item key={image.id}>
               <img
-                className="d-block w-75"  // Adjusted width
+                className="d-block w-75"
                 src={image.image_url}
                 alt={`Slide ${image.id}`}
-                style={{ height: '400px', objectFit: 'cover' }}  // Adjusted height
+                style={{ height: '400px', objectFit: 'cover' }}
               />
               <Carousel.Caption>
                 <p>Uploaded on: {new Date(image.uploaded_at).toLocaleDateString()}</p>

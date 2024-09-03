@@ -9,7 +9,7 @@ if (!BACKEND_URL) {
 }
 
 const getUser = () => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   if (!token) return null;
 
   try {
@@ -31,7 +31,7 @@ const getUser = () => {
   }
 };
 
-const getToken = () => localStorage.getItem('token');
+const getToken = () => sessionStorage.getItem('token');
 
 const signup = async (formData) => {
   try {
@@ -51,77 +51,65 @@ const signup = async (formData) => {
       throw new Error('No token received');
     }
 
-    localStorage.setItem('token', json.access);
-    return getUser();  // Fetch user from the new token
+    sessionStorage.setItem('token', json.access);
+    return getUser();
   } catch (error) {
     console.error('Signup error:', error);
     throw error;
   }
 };
 
-const signin = async (user) => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/signin/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials), // Ensure 'user' has correct fields
-      });
-  
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-  
-      const json = await res.json();
-      if (!json.access) {
-        throw new Error('No token received');
-      }
-  
-      localStorage.setItem('token', json.access);
-      return JSON.parse(atob(json.access.split('.')[1]));
-    } catch (error) {
-      console.error('Signin error:', error);
-      throw error;
+const signin = async (credentials) => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/auth/signin/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
     }
-  };
-  
+
+    const { access, refresh } = await res.json();  
+    if (!access || !refresh) {
+      throw new Error('No tokens received');
+    }
+
+    sessionStorage.setItem('token', access);
+    sessionStorage.setItem('refreshToken', refresh);
+
+    return getUser();
+  } catch (error) {
+    console.error('Signin error:', error);
+    throw error;
+  }
+};
 
 const signout = () => {
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('refreshToken');
 };
 
-const getUserProducts = async (userId) => {
+
+const getUserProducts = async () => {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/products/?user=${userId}`, {
+    const response = await fetch(`${BACKEND_URL}/api/products/`, {
       headers: { 'Content-Type': 'application/json' },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch user products');
+      throw new Error('Failed to fetch products');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching user products:', error);
+    console.error('Error fetching products:', error);
     return [];
   }
 };
 
-const getUserWatchlist = async (userId) => {
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/watchlist/?user=${userId}`, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user watchlist');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching user watchlist:', error);
-    return [];
-  }
-};
 
 const updateUserProfile = async (userId, userData) => {
   try {
@@ -145,6 +133,7 @@ const updateUserProfile = async (userId, userData) => {
   }
 };
 
+
 const deleteUserAccount = async (userId) => {
   try {
     const response = await fetch(`${BACKEND_URL}/api/users/${userId}/`, {
@@ -166,6 +155,7 @@ const deleteUserAccount = async (userId) => {
   }
 };
 
+
 export {
   getUser,
   getToken,
@@ -173,7 +163,6 @@ export {
   signin,
   signout,
   getUserProducts,
-  getUserWatchlist,
-  updateUserProfile,
-  deleteUserAccount,
+  updateUserProfile,  
+  deleteUserAccount,   
 };

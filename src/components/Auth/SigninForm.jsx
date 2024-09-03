@@ -1,11 +1,12 @@
-// components/Auth/SigninForm.jsx
+// src/components/Auth/SigninForm.jsx
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import useAuth from '../../hooks/useAuth'; 
+import useAuth from '../../hooks/useAuth';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SigninForm = () => {
   const { signin, loading, error } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
 
   const handleChange = (e) => {
@@ -16,13 +17,12 @@ const SigninForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signin(credentials); 
+      await signin(credentials);
       navigate('/');
     } catch (error) {
       console.error('Error during signin:', error);
     }
   };
-  
 
   return (
     <div>

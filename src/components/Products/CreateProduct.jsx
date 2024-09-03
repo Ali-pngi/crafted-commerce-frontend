@@ -1,3 +1,5 @@
+// src/components/Products/CreateProduct.jsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Cloudinary } from '@cloudinary/url-gen';
@@ -10,7 +12,6 @@ const CreateProduct = () => {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
 
-  // Initialize Cloudinary instance
   const cld = new Cloudinary({
     cloud: {
       cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
@@ -26,7 +27,7 @@ const CreateProduct = () => {
 
     try {
       const response = await axios.post(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, formData);
-      setImageUrl(response.data.secure_url);  // Store the image URL
+      setImageUrl(response.data.secure_url);  // Store the full URL of the image
     } catch (error) {
       console.error('Error uploading image to Cloudinary', error);
     }
@@ -35,14 +36,13 @@ const CreateProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Submit the product details along with the Cloudinary image URL
-      await axios.post('/api/products', { 
+      // Ensure you are sending the full URL to the backend
+      await axios.post('/api/products/', { 
         name, 
         description, 
         price, 
-        imageUrl 
+        image: imageUrl  // Use the full image URL
       });
-      // Redirect or provide feedback after successful product creation
     } catch (error) {
       console.error('Error creating product', error);
     }

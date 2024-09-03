@@ -1,103 +1,75 @@
-// src/components/UserProfile.jsx
+// src/components/User/UserProfile.jsx
 
 import React, { useState, useEffect } from 'react';
-import { getUser, updateUserProfile, deleteUserAccount, signout } from '../../services/userService';
+import { getUser, updateUserProfile, deleteUserAccount, signout } from '../../services/userService'; // Ensure path is correct
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({ username: '', email: '' });
+  const [profileData, setProfileData] = useState({ username: '', email: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const currentUser = getUser();
-      if (currentUser) {
-        setUser(currentUser);
-        setFormData({ username: currentUser.username, email: currentUser.email });
-      }
-    };
-    fetchUser();
+    const userData = getUser();
+    if (userData) {
+      setUser(userData);
+      setProfileData({ username: userData.username, email: userData.email });
+    }
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault();
+  const handleUpdateProfile = async () => {
     setLoading(true);
-    setError('');
     try {
-      const updatedUser = await updateUserProfile(user.id, formData);
+      const updatedUser = await updateUserProfile(user.id, profileData);
       setUser(updatedUser);
-      alert('Profile updated successfully!');
-    } catch (err) {
-      setError('Failed to update profile.');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('Failed to update profile');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAccountDeletion = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      return;
-    }
-
+  const handleDeleteAccount = async () => {
     setLoading(true);
-    setError('');
     try {
       await deleteUserAccount(user.id);
-      alert('Account deleted successfully!');
       signout();
-      window.location.href = '/'; // Redirect to home or another appropriate route after deletion
-    } catch (err) {
-      setError('Failed to delete account.');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      setError('Failed to delete account');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
-    return <p>Loading user data...</p>;
-  }
-
   return (
-    <div className="user-profile">
-      <h1>User Profile</h1>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleProfileUpdate}>
+    <div>
+      <h2>User Profile</h2>
+      {error && <p>{error}</p>}
+      {user ? (
         <div>
-          <label htmlFor="username">Username:</label>
           <input
             type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            required
+            value={profileData.username}
+            onChange={(e) => setProfileData({ ...profileData, username: e.target.value })}
           />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
           <input
             type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
+            value={profileData.email}
+            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
           />
+          <button onClick={handleUpdateProfile} disabled={loading}>
+            {loading ? 'Updating...' : 'Update Profile'}
+          </button>
+          <button onClick={handleDeleteAccount} disabled={loading}>
+            {loading ? 'Deleting...' : 'Delete Account'}
+          </button>
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Updating...' : 'Update Profile'}
-        </button>
-      </form>
-
-      <button onClick={handleAccountDeletion} className="delete-button" disabled={loading}>
-        {loading ? 'Processing...' : 'Delete Account'}
-      </button>
+      ) : (
+        <p>Loading user data...</p>
+      )}
     </div>
   );
 };

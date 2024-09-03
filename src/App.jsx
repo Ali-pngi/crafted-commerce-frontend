@@ -1,15 +1,20 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/NavBar/NavBar';
 import Home from './components/Home/Home';
 import UserProfile from './components/User/UserProfile';
 import SigninForm from './components/Auth/SigninForm';
 import SignupForm from './components/Auth/SignupForm';
 import CreateProduct from './components/Products/CreateProduct';
+import Logo from './components/Logo/Logo';
+import ProductDetails from './components/ProductDetails/ProductDetails';
+import './App.css'
+
 
 const App = () => {
   return (
     <>
+      <Logo />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -17,7 +22,7 @@ const App = () => {
         <Route path="/signin" element={<SigninForm />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/create-product" element={<CreateProduct />} />
-        
+        <Route path="/products/:id" element={<ProductDetails />} /> 
       </Routes>
     </>
   );
