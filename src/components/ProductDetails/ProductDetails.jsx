@@ -5,11 +5,14 @@ import { useParams } from 'react-router-dom';
 import { Carousel, Button } from 'react-bootstrap';
 import './ProductDetails.css';
 
+
 const ProductDetails = ({ user }) => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
+  
 
+  
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -85,24 +88,25 @@ const ProductDetails = ({ user }) => {
       <p>Price: ${product.price}</p>
 
       {product.images.length > 0 ? (
-        <Carousel>
-          {product.images.map((image) => (
-            <Carousel.Item key={image.id}>
-              <img
-                className="d-block w-75"
-                src={image.image_url}
-                alt={`Slide ${image.id}`}
-                style={{ height: '400px', objectFit: 'cover' }}
-              />
-              <Carousel.Caption>
-                <p>Uploaded on: {new Date(image.uploaded_at).toLocaleDateString()}</p>
-              </Carousel.Caption>
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      ) : (
-        <p>No images available</p>
-      )}
+  <Carousel>
+    {product.images.map((image) => (
+      <Carousel.Item key={image.id}>
+        <img
+          className="d-block w-75"
+          src={image.image_url}
+          alt={`Slide ${image.id}`}
+          style={{ height: '400px', objectFit: 'cover' }}
+        />
+        <Carousel.Caption>
+          <p>Uploaded on: {new Date(image.uploaded_at).toLocaleDateString()}</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+    ))}
+  </Carousel>
+) : (
+  <p>No images available</p>
+)}
+
 
       {user && (
         <Button onClick={handleWatchlistToggle} variant={isInWatchlist ? 'danger' : 'primary'}>

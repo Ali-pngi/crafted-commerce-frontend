@@ -1,5 +1,45 @@
-.navbar {
-    width: 10%;
+.custom-navbar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #d9a76c;
+    border-radius: 25px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 15px;
+    display: block !important;
+  }
+  
+  .custom-navbar .nav-link,
+  .custom-navbar .navbar-brand,
+  .custom-navbar .dropdown-item {
+    color: #4c2d00 !important;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .custom-navbar .navbar-toggler {
+    border-color: #4c2d00;
+  }
+  
+  .custom-navbar .nav-link:hover,
+  .custom-navbar .dropdown-item:hover {
+    background-color: #f5e1c6;
+    color: #4c2d00 !important;
+    border-radius: 20px;
+  }
+  
+  .custom-navbar .dropdown-menu {
+    background-color: #d9a76c;
     border-radius: 15px;
-    
-}
+    border: none;
+  }
+  
+  .custom-navbar .dropdown-divider {
+    border-top: 1px solid #4c2d00;
+  }
+  
+  .custom-navbar .navbar-collapse {
+    display: block !important;
+    text-align: center;
+  }
+  

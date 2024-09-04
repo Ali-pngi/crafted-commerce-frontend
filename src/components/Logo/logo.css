@@ -1,0 +1,18 @@
+.logo-container {
+    display: inline-block;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  
+  .logo-img {
+    width: 150px;
+    height: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border-radius: 50%; /* Optional: Adjust the radius if you want rounded corners */
+  }
+  
+  .logo-container:hover .logo-img {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  

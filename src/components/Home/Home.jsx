@@ -116,7 +116,7 @@ const Home = () => {
         ))}
       </Row>
 
-      {/* Modal for suggesting login/signup */}
+      
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Login Required</Modal.Title>

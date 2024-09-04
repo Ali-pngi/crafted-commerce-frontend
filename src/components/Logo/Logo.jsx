@@ -1,5 +1,7 @@
 import React from 'react';
 import logo from '../../AppAssets/logo.png';
+import './logo.css'
+
 
 const Logo = () => {
   return (

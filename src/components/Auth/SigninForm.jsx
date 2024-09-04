@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
+import { Form, Button, Container, Card } from 'react-bootstrap';
+import './SigninForm.css';
 
 const SigninForm = () => {
   const { signin, loading, error } = useAuth();
@@ -25,31 +27,44 @@ const SigninForm = () => {
   };
 
   return (
-    <div>
-      <h2>Sign In</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={credentials.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={credentials.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign In'}
-        </button>
-      </form>
-      {error && <p>{error}</p>}
-    </div>
+    <Container className="vh-100 d-flex align-items-center justify-content-center">
+      <Card className="p-4 shadow-sm" style={{ width: '400px', borderRadius: '20px', backgroundColor: '#D6B58E' }}>
+        <h2 className="text-center mb-4">Sign In</h2>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="username">
+            <Form.Control
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={credentials.username}
+              onChange={handleChange}
+              required
+              className="rounded-pill"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="password">
+            <Form.Control
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              className="rounded-pill"
+            />
+          </Form.Group>
+          {error && <p className="text-danger">{error}</p>}
+          <div className="d-flex justify-content-between mt-3">
+            <Button type="submit" variant="primary" disabled={loading} className="w-100 rounded-pill">
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </div>
+        </Form>
+        <div className="mt-3 text-center">
+          <Link to="/signup">Don't have an account? Sign Up</Link>
+        </div>
+      </Card>
+    </Container>
   );
 };
 
