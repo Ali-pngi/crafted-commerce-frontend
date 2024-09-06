@@ -1,5 +1,3 @@
-// src/components/Products/CreateProduct.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +16,7 @@ const CreateProduct = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (!user || !user.is_admin) {
+    if (!user || !user.is_superuser) {
       setShowModal(true);
     }
   }, [user]);
@@ -47,6 +45,7 @@ const CreateProduct = () => {
         price, 
         image: imageUrl 
       });
+      navigate('/');
     } catch (error) {
       console.error('Error creating product', error);
     }
@@ -73,7 +72,7 @@ const CreateProduct = () => {
         </Modal.Footer>
       </Modal>
 
-      {user && user.is_admin && (
+      {user && user.is_superuser && (
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Product Name</label>

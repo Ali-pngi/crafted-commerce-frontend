@@ -1,5 +1,3 @@
-// src/services/userService.jsx
-
 const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL || 'http://127.0.0.1:8000';
 
 if (!BACKEND_URL) {
@@ -9,28 +7,21 @@ if (!BACKEND_URL) {
 }
 
 const getUser = () => {
-  const token = sessionStorage.getItem('token');
-  if (!token) return null;
+  const userData = sessionStorage.getItem('userData');
+  if (!userData) return null;
 
   try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join('')
-    );
-
-    return JSON.parse(jsonPayload);
+    const parsedUser = JSON.parse(userData);
+    if (!parsedUser.id) {
+      console.error('User data is missing ID');
+      return null;
+    }
+    return parsedUser;
   } catch (error) {
-    console.error('Error parsing token:', error);
+    console.error('Error parsing user data:', error);
     return null;
   }
 };
-
 const getToken = () => sessionStorage.getItem('token');
 
 const signup = async (formData) => {
@@ -72,15 +63,25 @@ const signin = async (credentials) => {
       throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
     }
 
-    const { access, refresh } = await res.json();  
-    if (!access || !refresh) {
+    const data = await res.json();
+    if (!data.access || !data.refresh) {
       throw new Error('No tokens received');
     }
 
-    sessionStorage.setItem('token', access);
-    sessionStorage.setItem('refreshToken', refresh);
+    sessionStorage.setItem('token', data.access);
+    sessionStorage.setItem('refreshToken', data.refresh);
 
-    return getUser();
+    // Store user data in sessionStorage
+    const userData = {
+      id: data.user_id,
+      username: data.username,
+      email: data.email,
+      is_superuser: data.is_superuser,
+      date_joined: data.date_joined
+    };
+    sessionStorage.setItem('userData', JSON.stringify(userData));
+
+    return userData;
   } catch (error) {
     console.error('Signin error:', error);
     throw error;
@@ -90,6 +91,7 @@ const signin = async (credentials) => {
 const signout = () => {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('refreshToken');
+  sessionStorage.removeItem('userData');
 };
 
 
