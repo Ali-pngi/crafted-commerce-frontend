@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
 
 const CreateProduct = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -13,13 +13,13 @@ const CreateProduct = () => {
   const [price, setPrice] = useState('');
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user || !user.is_superuser) {
-      setShowModal(true);
+    if (user && !user.is_superuser) {
+      navigate('/');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -29,104 +29,115 @@ const CreateProduct = () => {
     formData.append('upload_preset', import.meta.env.VITE_REACT_APP_CLOUDINARY_UPLOAD_PRESET);
 
     try {
-      const response = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, formData);
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_REACT_APP_CLOUDINARY_UPLOAD_PRESET}/image/upload`,
+        formData
+      );
       setImageUrl(response.data.secure_url);
     } catch (error) {
       console.error('Error uploading image to Cloudinary', error);
+      setError('Failed to upload image. Please try again.');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/products/', { 
-        name, 
-        description, 
-        price, 
-        image: imageUrl 
-      });
+      const response = await axios.post('/api/products/', 
+        { 
+          title: name,  
+          description, 
+          price: parseFloat(price),  
+          image: imageUrl 
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log('Product created:', response.data);
       navigate('/');
     } catch (error) {
-      console.error('Error creating product', error);
+      console.error('Error creating product', error.response ? error.response.data : error);
+      setError('Failed to create product. Please try again.');
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    navigate('/');
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  return (
-    <div className="container">
-      <h1>Create a New Product</h1>
+  if (!user) {
+    return <Alert variant="warning">Please sign in to access this page.</Alert>;
+  }
 
-      <Modal show={showModal} onHide={handleCloseModal}>
+  if (!user.is_superuser) {
+    return (
+      <Modal show={true} onHide={() => navigate('/')}>
         <Modal.Header closeButton>
           <Modal.Title>Unauthorized Access</Modal.Title>
         </Modal.Header>
         <Modal.Body>You are not authorized to create products.</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseModal}>
+          <Button variant="primary" onClick={() => navigate('/')}>
             Return to Home
           </Button>
         </Modal.Footer>
       </Modal>
+    );
+  }
 
-      {user && user.is_superuser && (
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
+  return (
+    <div className="container">
+      <h1>Create a New Product</h1>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Product Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Price</Form.Label>
+          <Form.Control
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Product Image</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={handleImageChange}
+            accept="image/*"
+            required
+          />
+        </Form.Group>
+        {imageUrl && (
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">Product Name</label>
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <img src={imageUrl} alt="Preview" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
           </div>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">Description</label>
-            <textarea
-              className="form-control"
-              id="description"
-              rows="5"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="price" className="form-label">Price</label>
-            <input
-              type="number"
-              className="form-control"
-              id="price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="image" className="form-label">Product Image</label>
-            <input
-              type="file"
-              className="form-control"
-              id="image"
-              onChange={handleImageChange}
-              accept="image/*"
-              required
-            />
-          </div>
-          {imageUrl && (
-            <div className="mb-3">
-              <label>Preview:</label>
-              <img src={imageUrl} alt="Preview" style={{ width: '100%', height: 'auto' }} />
-            </div>
-          )}
-          <button type="submit" className="btn btn-primary">Create Product</button>
-        </form>
-      )}
+        )}
+        <Button type="submit" variant="primary">Create Product</Button>
+      </Form>
     </div>
   );
 };
