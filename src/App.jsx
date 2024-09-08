@@ -13,14 +13,13 @@ import './App.css'
 
 
 const App = () => {
-  const { user } = useAuth(); 
-
   return (
     <>
       <Logo />
       <Navbar />
       <Routes>
-        <Route path="/" element={<IndexPage user={user} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/signin" element={<SigninForm />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/create-product" element={<CreateProduct />} />
