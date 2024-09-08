@@ -1,91 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
+// src/components/Auth/SigninForm.jsx
+
+import React, { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
+import { Link, useNavigate } from 'react-router-dom';
+import { Form, Button, Container, Card } from 'react-bootstrap';
 import './SigninForm.css';
 
 const SigninForm = () => {
+  const { signin, loading, error } = useAuth();
   const navigate = useNavigate();
-  const { signin, error, loading } = useAuth();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
-  const [usernameExists, setUsernameExists] = useState(true);
-  const [checkingUsername, setCheckingUsername] = useState(false);
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
 
-  useEffect(() => {
-    const checkUsername = async (username) => {
-      if (!username) return;
-      setCheckingUsername(true);
-      try {
-        const response = await fetch(`/api/auth/check-username/?username=${username}`);
-        const result = await response.json();
-        setUsernameExists(!result.available); // If not available, it means username exists
-      } catch (error) {
-        console.error('Error checking username:', error);
-      } finally {
-        setCheckingUsername(false);
-      }
-    };
-
-    checkUsername(formData.username);
-  }, [formData.username]);
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!usernameExists) return; // Do not submit if the username does not exist
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await signin(formData);
+      await signin(credentials);
       navigate('/');
     } catch (error) {
-      console.error('Sign-in error:', error);
+      console.error('Error during signin:', error);
     }
   };
 
   return (
-    <Container className="vh-100 d-flex align-items-center justify-content-center signin-form">
-      <div className="form card">
-        <h1>Log In</h1>
-        {error && <Alert variant="danger">{error}</Alert>}
+    <Container className="vh-100 d-flex align-items-center justify-content-center">
+      <Card className="p-4 shadow-sm" style={{ width: '400px', borderRadius: '20px', backgroundColor: '#D6B58E' }}>
+        <h2 className="text-center mb-4">Sign In</h2>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="username">
-            <Form.Label>Username</Form.Label>
+          <Form.Group className="mb-3" controlId="username">
             <Form.Control
               type="text"
               name="username"
-              value={formData.username}
+              placeholder="Username"
+              value={credentials.username}
               onChange={handleChange}
-              isInvalid={!usernameExists}
               required
+              className="rounded-pill"
             />
-            {!usernameExists && <Form.Text className="text-danger">Username does not exist</Form.Text>}
           </Form.Group>
-          <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
+          <Form.Group className="mb-3" controlId="password">
             <Form.Control
               type="password"
               name="password"
-              value={formData.password}
+              placeholder="Password"
+              value={credentials.password}
               onChange={handleChange}
               required
+              className="rounded-pill"
             />
           </Form.Group>
+          {error && <p className="text-danger">{error}</p>}
           <div className="d-flex justify-content-between mt-3">
-            <Button variant="primary" type="submit" disabled={loading || !usernameExists}>
-              {loading ? 'Logging in...' : 'Log In'}
+            <Button type="submit" variant="primary" disabled={loading} className="w-100 rounded-pill">
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
-            <Link to="/">
-              <Button variant="secondary">Go Back</Button>
-            </Link>
           </div>
-          {checkingUsername && <Spinner animation="border" size="sm" className="ml-2" />}
         </Form>
-      </div>
+        <div className="mt-3 text-center">
+          <Link to="/signup">Don't have an account? Sign Up</Link>
+        </div>
+      </Card>
     </Container>
   );
 };

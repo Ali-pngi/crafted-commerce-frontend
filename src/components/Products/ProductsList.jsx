@@ -1,4 +1,5 @@
-// components/ProductList.js
+// src/components/Products/ProductList.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -16,8 +17,8 @@ const ProductList = () => {
             {products.map(product => (
                 <div key={product.id} className="product-item">
                     <h2>{product.title}</h2>
-                    {product.main_image ? (
-                        <img src={product.main_image} alt={product.title} />
+                    {product.images.length > 0 ? (
+                        <img src={product.images[0].image_url} alt={product.title} />
                     ) : (
                         <p>No image available</p>
                     )}

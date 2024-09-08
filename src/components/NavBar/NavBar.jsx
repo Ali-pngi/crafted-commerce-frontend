@@ -1,82 +1,44 @@
+// src/components/NavBar/CustomNavbar.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import './NavBar.css';
+import './Navbar.css'; // Import the new CSS file
 
-const Navbar = ({ user }) => {
-  const { signout } = useAuth(); 
-
-  const handleSignout = () => {
-    signout(); 
-  };
+const CustomNavbar = () => {
+  const { user, signout } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container-fluid">
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavDropdown"
-          aria-controls="navbarNavDropdown"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdownMenuLink"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Menu
-              </a>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li>
-                  <Link className="dropdown-item" to="/">Home</Link>
-                </li>
-                {user ? (
-                  <>
-                    <li>
-                      <Link className="dropdown-item" to="/profile">Profile</Link>
-                    </li>
-                    {user.role === 'admin' && (
-                      <>
-                        <li>
-                          <Link className="dropdown-item" to="/admin">Admin Panel</Link>
-                        </li>
-                        <li>
-                          <Link className="dropdown-item" to="/create-product">Create Product</Link>
-                        </li>
-                      </>
-                    )}
-                    <li>
-                      <button className="dropdown-item" onClick={handleSignout}>Sign Out</button>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li>
-                      <Link className="dropdown-item" to="/signin">Sign In</Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/signup">Sign Up</Link>
-                    </li>
-                  </>
-                )}
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <Navbar className="custom-navbar" expand="lg">
+      <Container>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+          <Nav>
+            <NavDropdown title="Menu" id="basic-nav-dropdown">
+              <NavDropdown.Item as={Link} to="/">Home</NavDropdown.Item>
+              <NavDropdown.Divider />
+              {!user ? (
+                <>
+                  <NavDropdown.Item as={Link} to="/signin">Sign in</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item as={Link} to="/signup">Sign up</NavDropdown.Item>
+                </>
+              ) : (
+                <>
+                  <NavDropdown.Item as={Link} to="/create-product">Create Product</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={signout}>Logout</NavDropdown.Item>
+                </>
+              )}
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 
-export default Navbar;
+export default CustomNavbar;
