@@ -1,7 +1,5 @@
-// src/components/Home/Home.jsx
-
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Card, Row, Col, Container } from 'react-bootstrap';
+import { Button, Card, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { getUserProducts } from '../../services/userService'; 
 import useAuth from '../../hooks/useAuth';
@@ -9,7 +7,6 @@ import useAuth from '../../hooks/useAuth';
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [watchlist, setWatchlist] = useState([]); 
-  const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -35,7 +32,7 @@ const Home = () => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setWatchlist(data.map(item => item.product_id)); // Note change here to match serialized response
+          setWatchlist(data.map(item => item.product_id));
         } catch (error) {
           console.error('Error fetching watchlist:', error);
         }
@@ -47,19 +44,18 @@ const Home = () => {
   }, [user]);
 
   const handleProductClick = (product) => {
-    if (!user) {
-      setShowModal(true);
-    } else {
-      navigate(`/products/${product.id}`); 
-    }
+    navigate(`/products/${product.id}`);  // Allow all users to access product details
   };
 
   const handleWatchlistToggle = async (productId) => {
-    if (!user) return;
+    if (!user) {
+      navigate('/signin');  // Redirect unauthenticated users to sign in
+      return;
+    }
 
     try {
       const response = await fetch(`/api/watchlist/${productId}/`, {
-        method: 'POST',  // Only use POST method now
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
@@ -82,7 +78,13 @@ const Home = () => {
     }
   };
 
-  const handleCloseModal = () => setShowModal(false);
+  const getImageUrl = (product) => {
+    if (product.images && product.images.length > 0) {
+      return product.images[0].image_url;  
+    } else {
+      return '/src/AppAssets/logo.png';  // Use default logo image if no image is available
+    }
+  };
 
   return (
     <Container>
@@ -90,14 +92,23 @@ const Home = () => {
       <Row className="gy-4">
         {products.map((product) => (
           <Col key={product.id} md={4}>
-            <Card onClick={() => handleProductClick(product)}>
+            <Card>
+              <Card.Header>
+                <Card.Title 
+                  style={{ cursor: 'pointer' }} 
+                  onClick={() => handleProductClick(product)}
+                >
+                  {product.title || product.name}
+                </Card.Title>
+              </Card.Header>
               <Card.Img 
                 variant="top" 
-                src={product.image ? product.image : '/path/to/default-image.png'} 
-                alt={product.name}
+                src={getImageUrl(product)}  
+                alt={product.title || product.name}
+                style={{ height: '200px', objectFit: 'cover', cursor: 'pointer' }}
+                onClick={() => handleProductClick(product)}
               />
               <Card.Body>
-                <Card.Title>{product.name}</Card.Title>
                 <Card.Text>Price: ${product.price}</Card.Text>
                 {user && (
                   <Button 
@@ -106,6 +117,7 @@ const Home = () => {
                       e.stopPropagation(); 
                       handleWatchlistToggle(product.id);
                     }}
+                    className="w-100"
                   >
                     {watchlist.includes(product.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
                   </Button>
@@ -115,27 +127,6 @@ const Home = () => {
           </Col>
         ))}
       </Row>
-
-      
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login Required</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Please log in or sign up to interact with products.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" href="/signin">
-            Sign In
-          </Button>
-          <Button variant="success" href="/signup">
-            Sign Up
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </Container>
   );
 };

@@ -24,10 +24,12 @@ const SignupForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Submitting form data:", formData);
     try {
       await signup(formData);
       navigate('/');  
     } catch (error) {
+      console.error("Signup error:", error);  
       if (typeof error.message === 'object') {
         setServerErrors(error.message);
       } else {

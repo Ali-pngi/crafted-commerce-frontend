@@ -1,4 +1,4 @@
-const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL || 'http://127.0.0.1:8000';
+const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL || 'http://127.0.0.1:8000/api';
 
 if (!BACKEND_URL) {
   console.error('Backend URL is not defined!');
@@ -32,18 +32,24 @@ const signup = async (formData) => {
       body: JSON.stringify(formData),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      throw new Error(data.message || JSON.stringify(data));
     }
 
-    const json = await res.json();
-    if (!json.access) {
-      throw new Error('No token received');
-    }
+    sessionStorage.setItem('token', data.access);
+    sessionStorage.setItem('refreshToken', data.refresh);
 
-    sessionStorage.setItem('token', json.access);
-    return getUser();
+    const userData = {
+      id: data.user_id,
+      username: data.username,
+      email: data.email,
+      date_joined: data.date_joined
+    };
+    sessionStorage.setItem('userData', JSON.stringify(userData));
+
+    return userData;
   } catch (error) {
     console.error('Signup error:', error);
     throw error;

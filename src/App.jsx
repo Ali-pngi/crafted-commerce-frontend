@@ -6,6 +6,7 @@ import UserProfile from './components/User/UserProfile';
 import SigninForm from './components/Auth/SigninForm';
 import SignupForm from './components/Auth/SignupForm';
 import CreateProduct from './components/Products/CreateProduct';
+import EditProduct from './components/Products/EditProduct';
 import Logo from './components/Logo/Logo';
 import ProductDetails from './components/ProductDetails/ProductDetails';
 import './App.css'
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/create-product" element={<CreateProduct />} />
         <Route path="/products/:id" element={<ProductDetails />} /> 
+        <Route path="/products/:id/edit" element={<EditProduct />} />
       </Routes>
     </>
   );
