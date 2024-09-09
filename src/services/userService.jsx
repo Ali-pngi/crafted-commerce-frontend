@@ -1,4 +1,4 @@
-const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL || 'http://127.0.0.1:8000/api';
+const BACKEND_URL = import.meta.env.VITE_EXPRESS_BACKEND_URL;
 
 if (!BACKEND_URL) {
   console.error('Backend URL is not defined!');
